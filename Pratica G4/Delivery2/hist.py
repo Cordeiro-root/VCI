@@ -8,5 +8,5 @@ cv.imshow('ima',ima)
 plt.hist(ima.ravel(),256,[0,256])
 plt.show()
 
-k=cv.waitKey(0) & 0xFFsdf
+k=cv.waitKey(0) & 0xFF
 
