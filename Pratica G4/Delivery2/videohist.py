@@ -34,9 +34,10 @@ while True:
     hist=cv.calcHist([frame],[0],None,[256],[0,256])
     plt.plot(hist)
     plt.show()
-	    
+    
     if cv.waitKey(1) == ord('q'):
-        break
+    	break
+
 # When everything done, release the capture 
  
 cap.release()
