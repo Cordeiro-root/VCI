@@ -7,7 +7,7 @@ if not cap.isOpened():
     print("Cannot open camera")
     exit()
     
-plt.ion()
+#plt.ion()
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -31,8 +31,9 @@ while True:
     #cv.imshow('HSV',imahsv)
 
     #histogram
+    plt.ion()
     hist=cv.calcHist([frame],[0],None,[256],[0,256])
-    plt.plot(hist)
+    plt.canvas.plot(hist)
     plt.show()
     
     if cv.waitKey(1) == ord('q'):
