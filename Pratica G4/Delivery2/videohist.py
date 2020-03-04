@@ -6,6 +6,8 @@ cap = cv.VideoCapture(0)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
+    
+plt.ion()
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -32,16 +34,8 @@ while True:
     hist=cv.calcHist([frame],[0],None,[256],[0,256])
     plt.plot(hist)
     plt.show()
-	
-    #another hist
-    #color = ('b','g','r')
-    #for i,col in enumerate(color):
-     #  	histr = cv.calcHist([frame],[i],None,[256],[0,256])
-    	#plt.plot(histr,color = col)
-     	#plt.xlim([0,256])
-    #plt.show()
-    
-    if cv.waitKey(30) == ord('q'):
+	    
+    if cv.waitKey(1) == ord('q'):
         break
 # When everything done, release the capture 
  
