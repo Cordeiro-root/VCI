@@ -23,10 +23,16 @@ while True:
     imahsv=cv.cvtColor(frame,cv.COLOR_BGR2HSV)
 
     # Display the resulting frame
-    cv.imshow('Normal',frame)
-    cv.imshow('GRAY', imagray)
-    cv.imshow('YUV', imayuv)
-    cv.imshow('HSV',imahsv)
+    #cv.imshow('Normal',frame)
+    #cv.imshow('GRAY', imagray)
+    #cv.imshow('YUV', imayuv)
+    #cv.imshow('HSV',imahsv)
+    
+    plt.subplot(221), plt.imshow(frame,'gray')
+    plt.subplot(222), plt.imshow(imagray,'gray')
+    plt.subplot(223), plt.imshow(imayuv,'gray')
+    plt.subplot(224), plt.imshow(imahsv,'gray')	
+    #plt.show()
     
     if cv.waitKey(1) == ord('q'):
         break

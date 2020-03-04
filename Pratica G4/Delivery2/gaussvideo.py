@@ -18,30 +18,26 @@ while True:
         
     frame = cv.flip(frame, 1)
     
-    #imagray=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
-    #imayuv=cv.cvtColor(frame,cv.COLOR_BGR2YUV)
-   # imahsv=cv.cvtColor(frame,cv.COLOR_BGR2HSV)
-
-    # Display the resulting frames
-    cv.imshow('Normal',frame)
-    #cv.imshow('GRAY', imagray)
-    #cv.imshow('YUV', imayuv)
-    #cv.imshow('HSV',imahsv)
-
-    #histogram
-    hist=cv.calcHist([frame],[0],None,[256],[0,256])
-    plt.plot(hist)
-    plt.show()
-	
-    #another hist
-    #color = ('b','g','r')
-    #for i,col in enumerate(color):
-     #  	histr = cv.calcHist([frame],[i],None,[256],[0,256])
-    	#plt.plot(histr,color = col)
-     	#plt.xlim([0,256])
-    #plt.show()
+    imagray=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+    imayuv=cv.cvtColor(frame,cv.COLOR_BGR2YUV)
+    imahsv=cv.cvtColor(frame,cv.COLOR_BGR2HSV)
     
-    if cv.waitKey(30) == ord('q'):
+    blurg = cv.GaussianBlur(imagray,(15,15),0)
+    blur = cv.GaussianBlur(frame,(15,15),0)
+    #cv.imshow('Original',frame)
+    #cv.imshow('Averaging',blur)
+	
+    # Display the resulting frames
+
+    cv.imshow('Normal',frame)
+    cv.imshow('Blur',blur)
+    cv.imshow('grayblur',blurg)
+    cv.imshow('GRAY', imagray)
+    cv.imshow('YUV', imayuv)
+    cv.imshow('HSV',imahsv)
+
+    
+    if cv.waitKey(5) == ord('q'):
         break
 # When everything done, release the capture 
  
