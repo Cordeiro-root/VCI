@@ -58,7 +58,7 @@ ax[0].set_title('Histogram (RGB)')
 ax[0].set_xlabel('Intensity value')
 ax[0].set_ylabel('Frequency')
 ax[0].set_xlim(0, 256 - 1)
-ax[0].set_ylim(0, 640 * 480)
+ax[0].set_ylim(0, 640 * 480 / 20)
 ax[0].tick_params(axis = 'y', labelsize = 6)
 R, = ax[0].plot(np.arange(256), np.zeros((256,)), c = 'r', label = 'Red')
 G, = ax[0].plot(np.arange(256), np.zeros((256,)), c = 'g', label = 'Green')
@@ -69,7 +69,7 @@ ax[1].set_title('Histogram (YUV)')
 ax[1].set_xlabel('Intensity value')
 ax[1].set_ylabel('Frequency')
 ax[1].set_xlim(0, 256 - 1)
-ax[1].set_ylim(0, 640 * 480)
+ax[1].set_ylim(0, 640 * 480 / 2)
 ax[1].tick_params(axis = 'y', labelsize = 6)
 Y, = ax[1].plot(np.arange(256), np.zeros((256,)), c = 'y', label = 'Luma')
 U, = ax[1].plot(np.arange(256), np.zeros((256,)), c = 'b', label = 'Blue projection')
@@ -80,7 +80,7 @@ ax[2].set_title('Histogram (HSV)')
 ax[2].set_xlabel('Intensity value')
 ax[2].set_ylabel('Frequency')
 ax[2].set_xlim(0, 256 - 1)
-ax[2].set_ylim(0, 640 * 480)
+ax[2].set_ylim(0, 640 * 480 / 2)
 ax[2].tick_params(axis = 'y', labelsize = 6)
 H, = ax[2].plot(np.arange(256), np.zeros((256,)), c = 'r', label = 'Hue')
 S, = ax[2].plot(np.arange(256), np.zeros((256,)), c = 'g', label = 'Saturation')
@@ -113,7 +113,7 @@ while cap.isOpened():
     # Show the histograms
     showHist(frame, f_YUV, f_HSV)
         
-    if cv.waitKey(25) == ord('q'):
+    if cv.waitKey(1) == ord('q'):
         break
         
 cap.release()
