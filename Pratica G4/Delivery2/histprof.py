@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use( 'tkagg' ) # rendering to a canvas
 
 
-cap = cv2.VideoCapture('garden_sif.y4m')
+cap = cv2.VideoCapture(0)
 
 
 bins=256

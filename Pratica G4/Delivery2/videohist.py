@@ -2,12 +2,17 @@ import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
 
+
 cap = cv.VideoCapture(0)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
-    
-#plt.ion()
+
+
+plt.ion()
+plt.show()
+
+
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -31,10 +36,10 @@ while True:
     #cv.imshow('HSV',imahsv)
 
     #histogram
-    plt.ion()
+
     hist=cv.calcHist([frame],[0],None,[256],[0,256])
-    plt.canvas.plot(hist)
-    plt.show()
+    plt.plot(hist)
+    
     
     if cv.waitKey(1) == ord('q'):
     	break
