@@ -24,7 +24,7 @@ flag = False
 while(1):
     if cap.isOpened():
         ret, frame = cap.read()
-        #frame = cv.flip(frame, 1)
+        frame = cv.flip(frame, 1)
         frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     else:
         break
