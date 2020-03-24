@@ -45,8 +45,9 @@ while(1):
     resy = cv.bitwise_and(frame,frame, mask= masky)
     resw = cv.bitwise_and(frame,frame, mask= maskw)
     
+    
     cv.imshow('frame',frame)
-    #cv.imshow('mask',mask)
+   # cv.imshow('mask',mask)
     cv.imshow('resb',resb)
     cv.imshow('resy',resy)
     cv.imshow('resr',resr)

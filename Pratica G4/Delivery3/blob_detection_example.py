@@ -2,7 +2,7 @@ import cv2
 import numpy as np;
 
 # Read image
-im = cv2.imread("blob.jpg", cv2.IMREAD_GRAYSCALE)
+im = cv2.imread("ball.png", cv2.IMREAD_GRAYSCALE)
 
 # Set up the detector with default parameters.
 if(cv2.__version__.startswith('2.')):

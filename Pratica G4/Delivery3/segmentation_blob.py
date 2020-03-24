@@ -58,9 +58,9 @@ while(1):
         mask = cv.inRange(hsv, low, high)
         
         if(b == 1):
-            # Segment yellow: [26, 66, 97], [46, 255, 208]
+            # Segment yellow: [21, 40, 0], [51, 255, 255]
             low = np.array([26, 66, 97])
-            high = np.array([46, 255, 208])
+            high = np.array([51, 255, 255])
             mask += cv.inRange(hsv, low, high)
         if(p == 1):
             # Segment green: [62, 51, 102], [74, 110, 186]
@@ -68,17 +68,17 @@ while(1):
             high = np.array([74, 110, 186])
             mask += cv.inRange(hsv, low, high)
         if(l == 1):
-            # Segment white: [35, 0, 182], [87, 58, 255]
+            # Segment white: [0, 0, 177], [66, 83, 249]
             low = np.array([35, 0, 182])
             high = np.array([87, 58, 255])
             mask += cv.inRange(hsv, low, high)
         if(c == 1):
-            # Segment blue: [88, 65, 124], [100, 255, 255]
+            # Segment blue: [110, 50, 50], [130, 255, 255]
             low = np.array([88, 65, 124])
             high = np.array([100, 255, 255])
             mask += cv.inRange(hsv, low, high)
         if(o == 1):
-            # Segment red: [171, 102, 0], [255, 255, 123]
+            # Segment red: [163, 124, 0], [200, 255, 216]
             low = np.array([171, 102, 0])
             high = np.array([255, 255, 123])
             mask += cv.inRange(hsv, low, high)    
@@ -91,12 +91,44 @@ while(1):
         #res[res > 0] = 255
         
         # Morphological operation
-        kernel = np.ones((3, 3), np.uint8)
-        opening = cv.morphologyEx(res, cv.MORPH_OPEN, kernel)
+        kernel = np.ones((5, 5), np.uint8)
+        dilation=cv.dilate(res,kernel,iterations=1)
+        opening = cv.morphologyEx(dilation, cv.MORPH_OPEN, kernel)
+        
         
         cv.imshow('Image Segmentation with tresholding (esc to close)', res)
-        cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
+        #cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
         
+                
+        # Setup SimpleBlobDetector parameters.
+        params = cv.SimpleBlobDetector_Params()
+        
+        #filter by color
+        params.filterByColor=1
+        params.blobColor=255
+        
+        #filter by circularity
+        #params.filterByCircularity = 1
+        #params.minCircularity = 0.1
+        #params.maxCircularity = 1   
+        
+        
+        #create a detector with the parameters
+        ver=(cv.__version__).split('.')
+        if int(ver[0])<3:
+        	
+        	detector=cv.SimpleBlobDetector(params)
+        else:
+        	detector=cv.SimpleBlobDetector_create(params)
+        	
+        #detect blobs
+        keypoints=detector.detect(opening)
+        
+        #draw detected blobs
+        im_with_keypoints=cv.drawKeypoints(opening,keypoints,np.array([]),(0,0,255),cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        
+        #show blobs
+        cv.imshow("Keypoints", im_with_keypoints)
         
     k = cv.waitKey(25) & 0xFF
     if k == 27:

@@ -36,15 +36,15 @@ cv.putText(img, 'Double click here to open the video', (20, 55),
            cv.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 1)
 cv.putText(img, 'Approx. color tresholds:', (20, 80), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-cv.putText(img, 'Blue -> [110, 50, 50], [130, 255, 255]', (40, 105), 
+cv.putText(img, 'Blue -> [88, 65, 124], [100, 255, 255]', (40, 105), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-cv.putText(img, 'Yellow -> [21, 40, 0], [51, 255, 255]', (40, 130), 
+cv.putText(img, 'Yellow -> [26, 66, 97], [46, 255, 208]', (40, 130), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-cv.putText(img, 'White -> [0, 0, 177], [66, 83, 249]', (40, 155), 
+cv.putText(img, 'White -> [35, 0, 182], [87, 58, 255]', (40, 155), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
 cv.putText(img, 'Green -> [62, 51, 102], [74, 110, 186]', (40, 180), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-cv.putText(img, 'Red -> [163, 124, 0], [200, 255, 216]', (40, 205), 
+cv.putText(img, 'Red -> [171, 102, 0], [255, 255, 123]', (40, 205), 
            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
 cv.imshow('Set the tresholds (esc to close)', img)
 
