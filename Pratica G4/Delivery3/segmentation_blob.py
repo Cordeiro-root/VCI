@@ -95,9 +95,11 @@ while(1):
         dilation=cv.dilate(res,kernel,iterations=1)
         opening = cv.morphologyEx(dilation, cv.MORPH_OPEN, kernel)
         
+        dilation=cv.dilate(opening,kernel,iterations=1)
         
         cv.imshow('Image Segmentation with tresholding (esc to close)', res)
-        #cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
+        cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
+        
         
                 
         # Setup SimpleBlobDetector parameters.
@@ -108,9 +110,9 @@ while(1):
         params.blobColor=255
         
         #filter by circularity
-        #params.filterByCircularity = 1
-        #params.minCircularity = 0.1
-        #params.maxCircularity = 1   
+        params.filterByCircularity = 1
+        params.minCircularity = 0.1
+        params.maxCircularity = 1   
         
         
         #create a detector with the parameters
@@ -122,10 +124,10 @@ while(1):
         	detector=cv.SimpleBlobDetector_create(params)
         	
         #detect blobs
-        keypoints=detector.detect(opening)
+        keypoints=detector.detect(dilation)
         
         #draw detected blobs
-        im_with_keypoints=cv.drawKeypoints(opening,keypoints,np.array([]),(0,0,255),cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        im_with_keypoints=cv.drawKeypoints(dilation,keypoints,np.array([]),(0,0,255),cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         
         #show blobs
         cv.imshow("Keypoints", im_with_keypoints)

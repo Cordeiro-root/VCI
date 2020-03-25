@@ -11,7 +11,8 @@ def action(event, x, y, flags, param):
     return
 
 # Create a black image, a window
-cap = cv.VideoCapture('robocup.mp4')
+frame=cv.imread('ball.png')
+#cap = cv.VideoCapture('robocup.mp4')
 cv.namedWindow('Set the tresholds (esc to close)')
 
 # Mot important colors for cambada:
@@ -51,10 +52,10 @@ cv.imshow('Set the tresholds (esc to close)', img)
 flag = False
 
 while(1):
-    if cap.isOpened():
-        ret, frame = cap.read()
-    else:
-        break
+    #if cap.isOpened():
+     #   ret, frame = cap.read()
+    #else:
+    #    break
     
     cv.setMouseCallback('Set the tresholds (esc to close)', action)
     

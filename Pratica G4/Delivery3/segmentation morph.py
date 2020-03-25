@@ -93,10 +93,9 @@ while(1):
         # Morphological operation
         kernel = np.ones((3, 3), np.uint8)
         opening = cv.morphologyEx(res, cv.MORPH_OPEN, kernel)
-        dilation=cv.dilate(opening,kernel,iterations=1)
         
         cv.imshow('Image Segmentation with tresholding (esc to close)', res)
-        cv.imshow('Image Segmentation with tresholding (esc to close)dilation', opening)
+        cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
         
         
     k = cv.waitKey(25) & 0xFF
