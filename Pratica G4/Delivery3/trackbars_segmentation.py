@@ -11,7 +11,7 @@ def action(event, x, y, flags, param):
     return
 
 # Create a black image, a window
-frame=cv.imread('ball.png')
+frame=cv.imread('puzzle.jpg')
 #cap = cv.VideoCapture('robocup.mp4')
 cv.namedWindow('Set the tresholds (esc to close)')
 
@@ -70,7 +70,8 @@ while(1):
         low = np.array([hl, sl, vl])
         high = np.array([hh, sh, vh])
         
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        gauss = cv.GaussianBlur(frame,(15,15),0)
+        hsv = cv.cvtColor(gauss, cv.COLOR_BGR2HSV)
         
         # Threshold the HSV image to get only blue colors
         mask = cv.inRange(hsv, low, high)

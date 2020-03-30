@@ -51,7 +51,8 @@ while(1):
         c = cv.getTrackbarPos('CAMBADA', 'Segmentation (esc to close)')
         o = cv.getTrackbarPos('Opponents', 'Segmentation (esc to close)')
         
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        gauss = cv.GaussianBlur(frame,(15,15),0)
+        hsv = cv.cvtColor(gauss, cv.COLOR_BGR2HSV)
         
         low = np.array([0, 0, 0])
         high = np.array([[0, 0, 0]])
@@ -60,7 +61,7 @@ while(1):
         if(b == 1):
             # Segment yellow: [21, 40, 0], [51, 255, 255]
             low = np.array([26, 66, 97])
-            high = np.array([51, 255, 255])
+            high = np.array([46, 255, 208])
             mask += cv.inRange(hsv, low, high)
         if(p == 1):
             # Segment green: [62, 51, 102], [74, 110, 186]
@@ -92,13 +93,12 @@ while(1):
         
         # Morphological operation
         kernel = np.ones((5, 5), np.uint8)
-        dilation=cv.dilate(res,kernel,iterations=1)
-        opening = cv.morphologyEx(dilation, cv.MORPH_OPEN, kernel)
-        
+        #dilation=cv.dilate(res,kernel,iterations=1)
+        opening = cv.morphologyEx(res, cv.MORPH_OPEN, kernel)
         dilation=cv.dilate(opening,kernel,iterations=1)
         
-        cv.imshow('Image Segmentation with tresholding (esc to close)', res)
-        cv.imshow('Image Segmentation with tresholding (esc to close)opening', opening)
+        cv.imshow('Image Segmentation with tresholding (esc to close)', dilation)
+        #cv.imshow('Image Segmentation with tresholding (esc to close)opening', gauss)
         
         
                 
@@ -106,12 +106,17 @@ while(1):
         params = cv.SimpleBlobDetector_Params()
         
         #filter by color
-        params.filterByColor=1
+        params.filterByColor=True
         params.blobColor=255
         
+        #filter by Area
+        params.filterByArea=True
+        params.minArea=225
+        params.maxArea=1000
+        
         #filter by circularity
-        params.filterByCircularity = 1
-        params.minCircularity = 0.1
+        params.filterByCircularity = True
+        params.minCircularity = 0.65
         params.maxCircularity = 1   
         
         
@@ -127,7 +132,7 @@ while(1):
         keypoints=detector.detect(dilation)
         
         #draw detected blobs
-        im_with_keypoints=cv.drawKeypoints(dilation,keypoints,np.array([]),(0,0,255),cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        im_with_keypoints=cv.drawKeypoints(frame,keypoints,np.array([]),(0,0,255),cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         
         #show blobs
         cv.imshow("Keypoints", im_with_keypoints)
