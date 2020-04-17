@@ -20,10 +20,14 @@ while cap.isOpened():
 	
 	threshold1 = cv.getTrackbarPos('Threshold1','Threshold')
 	threshold2 = cv.getTrackbarPos('Threshold2','Threshold')
-	edges = cv.Canny(frame,threshold1,threshold2)
+
+	imgray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+	ret, thresh = cv.threshold(imgray, threshold1, threshold2, 0)
+	contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 	
 	cv.imshow('Original video', frame)
-	cv.imshow('Edges',edges)
+	cv.drawContours(frame, contours, -1, (0,0,255), 3)
+	cv.imshow('Contours',frame)
 
 	k = cv.waitKey(5) & 0xFF
 	if k == 27:
