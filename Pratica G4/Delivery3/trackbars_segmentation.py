@@ -11,7 +11,7 @@ def action(event, x, y, flags, param):
     return
 
 # Create a black image, a window
-frame=cv.imread('puzzle.jpg')
+frame=cv.imread('colors.jpg')
 #cap = cv.VideoCapture('robocup.mp4')
 cv.namedWindow('Set the tresholds (esc to close)')
 
