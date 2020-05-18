@@ -6,17 +6,6 @@
 
 import numpy as np
 import cv2 as cv
-from centroidtracker import CentroidTracker
-
-###############################################################################
-#                               CONSTANTS                                     #
-###############################################################################
-
-# Frame height
-h = 700
-
-# Frame width
-w = 1080
 
 ###############################################################################
 #                               FUNCTIONS                                     #
@@ -62,9 +51,9 @@ def extract_rectangles(arr):
     to_return = []
     
     for c in arr:
-        top = h
+        top = 700
         bottom = 0
-        left = w
+        left = 1080
         right = 0
         for point in c:
             if(point[0][0] > right):
@@ -79,32 +68,28 @@ def extract_rectangles(arr):
         # Remove rectangles with shape clearly wrong
         if(bottom - top != 0 and right - left != 0):
             if((bottom - top) / (right - left) <= 2 and (right - left) / (bottom - top) <= 2):
-                to_return.append((left, top, right, bottom))
+                to_return.append([(left, top), (right, bottom)]) 
     
     return to_return
 
+def display_bboxes(frame, arr, color):
+    for b in arr:
+        cv.rectangle(frame, (b[0][0], b[0][1]), (b[1][0], b[1][1]), color, 3)
+    
+    return
 
 def remove_small(arr):
     to_return = []
     
-    areas = [(b[2] - b[0]) * (b[3] - b[1]) for b in arr]
+    areas = [(b[1][0] - b[0][0]) * (b[1][1] - b[0][1]) for b in arr]
     area_avg = np.mean(areas)
     i = 0
     for a in areas:
-        if(a > area_avg / 4):
+        if(a > area_avg / 3):
             to_return.append(arr[i])
         i += 1
     
     return to_return
-
-def display_centroids(frame, objects, label, color):
-    for (objectID, centroid) in objects.items():
-        text = "{}: {}".format(label, objectID)
-        cv.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
-			cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-        cv.circle(frame, (centroid[0], centroid[1]), 4, color, -1)
-        
-    return
 
 ###############################################################################
 #                                   MAIN                                      #
@@ -114,9 +99,6 @@ cap = cv.VideoCapture('video.mp4')
 
 cv.namedWindow('Object tracking')
 
-ct_robots = CentroidTracker()
-ct_balls = CentroidTracker()
-
 while cap.isOpened():
     ret, frame = cap.read()
     
@@ -124,7 +106,7 @@ while cap.isOpened():
         print('End of the video...')
         break
     
-    frame = cv.resize(frame, (w, h))
+    frame = cv.resize(frame, (1080, 700))
     
     # 1) Contour detection (Robots)
     res = detect_color(frame, 'light blue')    
@@ -146,13 +128,11 @@ while cap.isOpened():
     bboxes_robots = remove_small(bboxes_robots)
     bboxes_balls = remove_small(bboxes_balls)
     
-    # 6) Tracking... https://www.pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/
-    objects_robots = ct_robots.update(bboxes_robots)  
-    objects_balls = ct_balls.update(bboxes_balls)
-      
-    # 7) Display the frame        
-    display_centroids(frame, objects_robots, 'Robot', (255, 0, 0))  
-    display_centroids(frame, objects_balls, 'Ball', (0, 0, 255))  
+    # 6) Tracking...
+    
+    # 7) Display the frame
+    display_bboxes(frame, bboxes_robots, (255, 0, 0))
+    display_bboxes(frame, bboxes_balls, (0, 0, 255))
     
     cv.imshow('Object tracking', frame)
     
