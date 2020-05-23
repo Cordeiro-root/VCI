@@ -11,11 +11,12 @@ h = 700
 # Frame width
 w = 1080
 
-# Parameters for Shi-Tomasi corner detection
-feature_params = dict(maxCorners = 300, qualityLevel = 0.2, minDistance = 2, blockSize = 7)
-
 # Parameters for Lucas-Kanade optical flow
 lk_params = dict(winSize = (15,15), maxLevel = 2, criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
+
+# Filename
+filenames = ['video.mp4', '..//Delivery4//robocup2.mp4', 'video1.mov']
+f = 0
 
 ###############################################################################
 #                               FUNCTIONS                                     #
@@ -93,15 +94,19 @@ def remove_small(arr):
     return to_return
 
 def extract_points(arr):
-    #float32 is required by the optical flow function
-    to_return = np.zeros((len(arr) * 2, 1, 2), dtype = 'float32')
+    # Every element of arr is a square (2 points, top-left and bottom-right 
+    # corners). Here we extract for each square just one point, in the middle.
+    
+    # float32 is required by the optical flow function
+    to_return = np.zeros((len(arr), 1, 2), dtype = 'float32')
     
     i = 0
     for t in arr:
-        to_return[i, 0, 0] = t[0]
-        to_return[i, 0, 1] = t[1]
-        to_return[i+1, 0, 0] = t[2]
-        to_return[i+1, 0, 1] = t[3]
+        # t[0] = left, t[1] = top, t[2] = right, t[3] = bottom
+        x_tmp = t[2] - t[0]
+        y_tmp = t[3] - t[1]
+        to_return[i, 0, 0] = t[0] + x_tmp
+        to_return[i, 0, 1] = t[1] + y_tmp
         i +=1
     
     return to_return
@@ -113,9 +118,9 @@ def draw_optical_flow(new, old, color, mask, frame):
         a, b = n.ravel()
         # Returns a contiguous flattened array as (x, y) coordinates for old point
         c, d = o.ravel()
-        # Draws line between new and old position with green color and 2 thickness
+        # Draws line between new and old position
         mask = cv.line(mask, (a, b), (c, d), color, 2)
-        # Draws filled circle (thickness of -1) at new position with green color and radius of 3
+        # Draws filled circle at new position
         frame = cv.circle(frame, (a, b), 3, color, -1)
         
     return mask, frame
@@ -135,9 +140,9 @@ def update_distance(prev_dist, new_points, old_points):
 ###############################################################################
 
 # Read the first frame
-cap = cv.VideoCapture('video.mp4')
-#cap = cv.VideoCapture('..//Delivery4//robocup2.mp4')
+cap = cv.VideoCapture(filenames[f])
 ret, first_frame = cap.read()
+
 # Resize the frame to fit the screen
 first_frame = cv.resize(first_frame, (w, h))
 prev_gray = cv.cvtColor(first_frame, cv.COLOR_BGR2GRAY)
@@ -163,6 +168,8 @@ bboxes_balls = extract_rectangles(good_contours_balls)
 bboxes_robots = remove_small(bboxes_robots)
 bboxes_balls = remove_small(bboxes_balls)
 
+# 6) Squares to point conversion, to prepare the input for the predictions of
+#    calcOpticalFlowPyrLK() in the next frame
 prev_robots = extract_points(bboxes_robots)
 prev_balls = extract_points(bboxes_balls)
 
@@ -170,7 +177,6 @@ prev_balls = extract_points(bboxes_balls)
 mask = np.zeros_like(first_frame)
 color_robots = (255, 0, 0)
 color_balls = (0, 0, 255)
-
 dist_img = np.zeros((200, 640))
 
 # Distances
@@ -240,7 +246,7 @@ while(cap.isOpened()):
     
     # Every 5 frames recompute the points to track, if new objects appeared or 
     # others disappeared
-    if(frame_counter % 5 == 0):
+    if(frame_counter % 10 == 0):
         # 1) Contour detection (Robots)
         res = detect_color(frame, 'light blue')    
         contours_robots, hierarchy = cv.findContours(res, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -261,12 +267,15 @@ while(cap.isOpened()):
         bboxes_robots = remove_small(bboxes_robots)
         bboxes_balls = remove_small(bboxes_balls)
 
+        # 6) Squares to point conversion, to prepare the input for the predictions of
+        #    calcOpticalFlowPyrLK() in the next frame
         prev_robots = extract_points(bboxes_robots)
         prev_balls = extract_points(bboxes_balls)
     
     frame_counter += 1    
         
-    # Frames are read by intervals of 10 milliseconds. The programs breaks out of the while loop when the user presses the 'q' key
+    # Frames are read by intervals of 10 milliseconds. The programs breaks out 
+    # of the while loop when the user presses the 'esc' key
     k = cv.waitKey(25) & 0xFF
     if k == 27:
         break

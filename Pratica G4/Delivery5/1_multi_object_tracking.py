@@ -111,6 +111,7 @@ def display_centroids(frame, objects, label, color):
 ###############################################################################
 
 cap = cv.VideoCapture('video.mp4')
+#cap = cv.VideoCapture('video1.mov')
 
 cv.namedWindow('Object tracking')
 
