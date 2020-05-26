@@ -57,7 +57,6 @@ while True:
   bbox = cv2.selectROI('MultiTracker', frame)
   bboxes.append(bbox)
   colors.append((randint(0, 255), randint(0, 255), randint(0, 255)))
-  print("Press ESC")
   print("Press q to quit selecting boxes and start tracking")
   print("Press any other key to select next object")
   k = cv2.waitKey(0) & 0xFF
@@ -90,6 +89,7 @@ while cap.isOpened():
   for i, newbox in enumerate(boxes):
     p1 = (int(newbox[0]), int(newbox[1]))
     p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+    cv2.putText(frame, "label {}".format(i+1), (p1[0] - 10, p2[1] - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, colors[i], 2)
     cv2.rectangle(frame, p1, p2, colors[i], 2, 1)
  
   # show frame
