@@ -36,10 +36,10 @@ def createTrackerByName(trackerType):
 cap = cv2.VideoCapture('video2.mp4')
  
 # Read first frame
-success, frame = cap.read()
+ret, frame = cap.read()
 
 # quit if unable to read the video file
-if not success:
+if not ret:
   print('Failed to read video')
   sys.exit(1)
 
@@ -79,12 +79,12 @@ for bbox in bboxes:
 
 # Process video and track objects
 while cap.isOpened():
-  success, frame = cap.read()
-  if not success:
+  ret, frame = cap.read()
+  if not ret:
     break
   frame=cv2.resize(frame, (1080, 700))
   # get updated location of objects in subsequent frames
-  success, boxes = multiTracker.update(frame)
+  ret, boxes = multiTracker.update(frame)
  
   # draw tracked objects
   for i, newbox in enumerate(boxes):
