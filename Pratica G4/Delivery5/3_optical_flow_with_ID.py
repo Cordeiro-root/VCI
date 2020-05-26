@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from centroidtracker import CentroidTracker
 
 ###############################################################################
 #                               CONSTANTS                                     #
@@ -17,6 +18,13 @@ lk_params = dict(winSize = (15,15), maxLevel = 2, criteria = (cv.TERM_CRITERIA_E
 # Filename
 filenames = ['video.mp4', '..//Delivery4//robocup2.mp4', 'video1.mov']
 f = 0
+
+# Trackers
+ct_robots = CentroidTracker()
+ct_balls = CentroidTracker()
+
+# px to meters (12m / 300px)
+CONV = 12 / 300
 
 ###############################################################################
 #                               FUNCTIONS                                     #
@@ -77,6 +85,12 @@ def extract_rectangles(arr):
         if(bottom - top != 0 and right - left != 0):
             if((bottom - top) / (right - left) <= 2 and (right - left) / (bottom - top) <= 2):
                 to_return.append((left, top, right, bottom))
+                
+    # Remove rectangles which are inside others
+    for c in to_return:
+        for k in to_return:
+            if(k[0] > c[0] and k[1] > c[1] and k[2] < c[2] and k[3] < c[3]):
+                to_return.remove(k)
     
     return to_return
 
@@ -103,30 +117,35 @@ def extract_points(arr):
     i = 0
     for t in arr:
         # t[0] = left, t[1] = top, t[2] = right, t[3] = bottom
-        x_tmp = t[2] - t[0]
-        y_tmp = t[3] - t[1]
+        x_tmp = int((t[2] - t[0]) / 2)
+        y_tmp = int((t[3] - t[1]) / 2)
         to_return[i, 0, 0] = t[0] + x_tmp
         to_return[i, 0, 1] = t[1] + y_tmp
         i +=1
     
     return to_return
 
-def draw_optical_flow(new, old, color, mask, frame, ids):
-    print(color)
+def draw_optical_flow(new, old, color, mask_track, mask_id, frame, objects):
+    mask_id = np.zeros_like(frame)
+    
     # Draws the optical flow tracks for the robots
-    for i, (n, o, identif) in enumerate(zip(new, old, ids)):
+    for i, (n, o) in enumerate(zip(new, old)):
         # Returns a contiguous flattened array as (x, y) coordinates for new point
         a, b = n.ravel()
         # Returns a contiguous flattened array as (x, y) coordinates for old point
         c, d = o.ravel()
         # Draws line between new and old position
-        mask = cv.line(mask, (a, b), (c, d), color, 2)
+        mask_track = cv.line(mask_track, (a, b), (c, d), color, 2)
         # Draws filled circle at new position
-        frame = cv.circle(frame, (a, b), 3, color, -1)
+        mask_id = cv.circle(mask_id, (a, b), 3, color, -1)
         # Writes the ID on the new position
-        frame = cv.putText(frame, 'ID: {}'.format(identif), (int(a), int(b-5)), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, thickness = 2)
+        for (objectID, centroid) in objects.items():
+            text = "ID: {}".format(objectID)
+            cv.putText(mask_id, text, (centroid[0] - 10, centroid[1] - 10),
+			cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            cv.circle(mask_id, (centroid[0], centroid[1]), 4, color, -1)
         
-    return mask, frame
+    return mask_track, mask_id, frame
 
 def update_distance(prev_dist, new_points, old_points):
     if(new_points.shape == old_points.shape):
@@ -175,13 +194,18 @@ bboxes_balls = remove_small(bboxes_balls)
 #    calcOpticalFlowPyrLK() in the next frame
 prev_robots = extract_points(bboxes_robots)
 prev_balls = extract_points(bboxes_balls)
-robots_ids = np.arange(1, prev_robots.shape[0] + 1)
-balls_ids = np.arange(1, prev_balls.shape[0] + 1)
+
+objects_robots = ct_robots.update(prev_robots, False)  
+objects_balls = ct_balls.update(prev_balls, False)
 
 # For later drawing purposes
-mask = np.zeros_like(first_frame)
-color_robots = (255, 0, 0)
-color_balls = (0, 0, 255)
+mask_track_robo = np.zeros_like(first_frame)
+mask_id_robo = np.zeros_like(first_frame)
+mask_track_ball = np.zeros_like(first_frame)
+mask_id_ball = np.zeros_like(first_frame)
+#color_robots = (255, 0, 0)
+color_robots = (255, 255, 255)
+color_balls = (100, 100, 100)
 dist_img = np.zeros((150, 500))
 
 # Distances
@@ -190,6 +214,9 @@ dist_balls = 0
 
 cv.namedWindow('Optical flow')
 cv.namedWindow('Travelled distance')
+
+for i in range(0, 250):
+    ret, frame = cap.read()
 
 frame_counter = 1
 while(cap.isOpened()):
@@ -228,12 +255,13 @@ while(cap.isOpened()):
     dist_balls = update_distance(dist_balls, good_new_balls, good_old_balls)
     
     # Draw the optical flow
-    mask_robots, frame = draw_optical_flow(good_new_robots, good_old_robots, color_robots, mask, frame, robots_ids)
-    mask_balls, frame = draw_optical_flow(good_new_balls, good_old_balls, color_balls, mask, frame, balls_ids)
+    mask_robots_track, mask_robots_id, frame = draw_optical_flow(good_new_robots, good_old_robots, color_robots, mask_track_robo, mask_id_robo, frame, objects_robots)
+    mask_balls_track, mask_balls_id, frame = draw_optical_flow(good_new_balls, good_old_balls, color_balls, mask_track_ball, mask_id_ball, frame, objects_balls)
     
     # Overlays the optical flow tracks on the original frame
-    output = cv.add(frame, mask_robots)
-    output = cv.add(frame, mask_balls)
+    output = frame
+    output = cv.add(output, cv.add(mask_robots_track, mask_robots_id))
+    output = cv.add(output, cv.add(mask_balls_track, mask_balls_id))
     
     # Updates previous frame
     prev_gray = gray.copy()
@@ -242,14 +270,17 @@ while(cap.isOpened()):
     prev_robots = good_new_robots.reshape(-1, 1, 2)
     prev_balls = good_new_balls.reshape(-1, 1, 2)
     
+    objects_robots = ct_robots.update(prev_robots, False)  
+    objects_balls = ct_balls.update(prev_balls, False)
+    
     # Opens a new window and displays the output frame
     cv.imshow('Optical flow', output)
-    cv.putText(dist_img, 'Team distance: {:.2f} px'.format(dist_team), (10, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
-    cv.putText(dist_img, 'Balls distance: {:.2f} px'.format(dist_balls), (10, 100), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
+    cv.putText(dist_img, 'Team distance: {:.2f} m'.format(dist_team * CONV), (10, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
+    cv.putText(dist_img, 'Balls distance: {:.2f} m'.format(dist_balls * CONV), (10, 100), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
     cv.imshow('Travelled distance', dist_img)
     dist_img = np.zeros((150, 500))
     
-    # Every 5 frames recompute the points to track, if new objects appeared or 
+    # Every 10 frames recompute the points to track, if new objects appeared or 
     # others disappeared
     if(frame_counter % 10 == 0):
         # 1) Contour detection (Robots)
@@ -262,7 +293,7 @@ while(cap.isOpened()):
 
         # 3) Keep only good shapes
         good_contours_robots = good_shapes(contours_robots, 'rect')
-        good_contours_balls = good_shapes(contours_balls, 'circ')        
+        good_contours_balls = good_shapes(contours_balls, 'circ')   
     
         # 4) Rectangles from contours
         bboxes_robots = extract_rectangles(good_contours_robots)
@@ -274,18 +305,19 @@ while(cap.isOpened()):
 
         # 6) Squares to point conversion, to prepare the input for the predictions of
         #    calcOpticalFlowPyrLK() in the next frame
+        prev_robots_old = prev_robots
+        prev_balls_old = prev_balls
         prev_robots = extract_points(bboxes_robots)
         prev_balls = extract_points(bboxes_balls)
         
-        # 7) Assign/update/remove IDs (to/from) the objects in the scene
-        robots_ids = np.arange(1, prev_robots.shape[0] + 1)
-        balls_ids = np.arange(1, prev_balls.shape[0] + 1)
+        objects_robots = ct_robots.update(prev_robots, False)  
+        objects_balls = ct_balls.update(prev_balls, False)
     
     frame_counter += 1    
         
     # Frames are read by intervals of 10 milliseconds. The programs breaks out 
     # of the while loop when the user presses the 'esc' key
-    k = cv.waitKey(25) & 0xFF
+    k = cv.waitKey(10) & 0xFF
     if k == 27:
         break
     

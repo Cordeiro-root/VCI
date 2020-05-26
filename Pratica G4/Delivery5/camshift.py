@@ -19,6 +19,11 @@ cv.normalize(roi_hist,roi_hist,0,255,cv.NORM_MINMAX)
 
 # Setup the termination criteria, either 10 iteration or move by atleast 1 pt
 term_crit = ( cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1 )
+
+# Read the first 100 frames (then also a ball is present)
+#for i in range(0, 100):
+#    ret, frame = cap.read()
+
 while(1):
     ret, frame = cap.read()
     if ret == True:

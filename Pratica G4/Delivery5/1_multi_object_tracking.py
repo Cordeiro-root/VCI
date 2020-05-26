@@ -148,8 +148,8 @@ while cap.isOpened():
     bboxes_balls = remove_small(bboxes_balls)
     
     # 6) Tracking... https://www.pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/
-    objects_robots = ct_robots.update(bboxes_robots)  
-    objects_balls = ct_balls.update(bboxes_balls)
+    objects_robots = ct_robots.update(bboxes_robots, True)  
+    objects_balls = ct_balls.update(bboxes_balls, True)
       
     # 7) Display the frame        
     display_centroids(frame, objects_robots, 'Robot', (255, 0, 0))  
