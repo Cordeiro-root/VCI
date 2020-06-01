@@ -8,21 +8,21 @@ trackerTypes = ['BOOSTING', 'MIL', 'KCF','TLD', 'MEDIANFLOW', 'GOTURN', 'MOSSE',
 def createTrackerByName(trackerType):
   # Create a tracker based on tracker name
   if trackerType == trackerTypes[0]:
-    tracker = cv2.TrackerBoosting_create()
+    tracker = cv2.TrackerBoosting_create()  #not good
   elif trackerType == trackerTypes[1]:
-    tracker = cv2.TrackerMIL_create()
+    tracker = cv2.TrackerMIL_create()       #nope
   elif trackerType == trackerTypes[2]:
-    tracker = cv2.TrackerKCF_create()
+    tracker = cv2.TrackerKCF_create()       #not
   elif trackerType == trackerTypes[3]:
-    tracker = cv2.TrackerTLD_create()
+    tracker = cv2.TrackerTLD_create()       #very slow
   elif trackerType == trackerTypes[4]:
-    tracker = cv2.TrackerMedianFlow_create()
+    tracker = cv2.TrackerMedianFlow_create()  #no no
   elif trackerType == trackerTypes[5]:
-    tracker = cv2.TrackerGOTURN_create()
+    tracker = cv2.TrackerGOTURN_create()    #doesnt work
   elif trackerType == trackerTypes[6]:
-    tracker = cv2.TrackerMOSSE_create()
+    tracker = cv2.TrackerMOSSE_create()     #weird
   elif trackerType == trackerTypes[7]:
-    tracker = cv2.TrackerCSRT_create()
+    tracker = cv2.TrackerCSRT_create()      #slow
   else:
     tracker = None
     print('Incorrect tracker name')
@@ -91,7 +91,10 @@ while cap.isOpened():
     p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
     cv2.putText(frame, "label {}".format(i+1), (p1[0] - 10, p2[1] - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, colors[i], 2)
     cv2.rectangle(frame, p1, p2, colors[i], 2, 1)
- 
+  
+  # Display tracker type on frame
+  cv2.putText(frame, trackerType + " Tracker", (100,20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2);
+  
   # show frame
   cv2.imshow('MultiTracker', frame)
    
