@@ -15,5 +15,8 @@ Double click to open the image, slide parameters trackbar to adjust the values o
 
 - ``` 3_object_detection.py ```
 
-Object detection on grayscale images. After running the script, double click on the indicated area to open the video, than choose the object to be detected by seting the assign trackbar to '1', multiple objects can be tracked 
+Object detection on grayscale images. After running the script, double click on the indicated area to open the video, than choose the object to be detected by seting the assign trackbar to '1', multiple objects can be tracked.
 
+- ``` segmentation_blob.py ```
+
+Also used for object detection. In this case the object is detected using blob detection by adjusting area, circularity and color parameters. The steps to run the script are identic to 3_object_detection.py.
