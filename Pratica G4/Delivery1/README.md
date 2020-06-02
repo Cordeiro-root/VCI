@@ -2,9 +2,12 @@
 
 ### Deliverable 1; Video capture, color calibrations and watermark
 
-The first deliverable, we where able to concatenate every point into one file, ``` deliverable_1.py ```.
+The first deliverable, we where able to concatenate every point into one file, ``` deliverable_1.py ``` and do a VideoPlayer ``` VideoPlayer.py ```.
 In order to use the program, simply use ``` python deliverable_1.py ```, then you need to choose if you want to record a video or play a existing one, play with the Contrast, Brightness and Saturation parameters. 
 Follow the instructions to save the record or to quit the video.
 
 ### Other files
+- ``` VideoPlayer.py ``` 
+Here we have a sort of video player, user friendly.
+
 We also have a lot off test files, where we try the various points like capture video, save and read, color calibration, and watermark before we reach the final result. 
