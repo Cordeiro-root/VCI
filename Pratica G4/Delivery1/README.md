@@ -1,0 +1,2 @@
+In the first deliverable, we where able to concatenate every point into one file, deliverable_1.py.
+We also have a lot off test files, where we try the various points like capture video, save and read, color calibration, and watermark.
