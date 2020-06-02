@@ -14,7 +14,7 @@ def action(event, x, y, flags, param):
 cap = cv.VideoCapture('robocup.mp4')
 cv.namedWindow('Segmentation (esc to close)')
 
-# Mot important colors for cambada:
+# Most important colors for cambada:
 # (1) Yellow (ball)
 # (2) Green (pitch)
 # (3) White (lines)
