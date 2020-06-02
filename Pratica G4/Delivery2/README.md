@@ -1,6 +1,6 @@
 # Visão por Computador na Industria - Industrial Computer Vision (Group 04)
 
-### Deliverable 2; Video capture, color calibrationa and watermark
+### Deliverable 2; Transforme color spaces HSV, YUV and GRAY, calculate Histograms and equalization, and Gaussian and blur filters
 
 The second deliverable, we transform the acquired images to other color spaces, YUV, HSV and GRAY, calculate histograms in real time such as histogram equalization, and we aplly the gaussian and blur filters with diferent kernels.
 
